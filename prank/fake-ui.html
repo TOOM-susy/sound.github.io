@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Audio Player</title>
+  <style>
+    body {
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .player {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      width: 350px;
+    }
+    .cover {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    .cover img {
+      width: 100%;
+      border-radius: 5px;
+    }
+    .info h2 {
+      color: #fff;
+      margin: 10px 0;
+    }
+    .info h3 {
+      color: #ccc;
+      margin: 5px 0;
+      font-weight: normal;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    .controls button {
+      background: #444;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background: #666;
+    }
+  </style>
+</head>
+<body onclick='(function(){document.querySelector("body").requestFullscreen();})();'>
+  <div class="player">
+    <div class="cover">
+      <img src="./audio.png" alt="Обложка трека">
+    </div>
+    <div class="info">
+      <h2>Сейчас играет</h2>
+      <h3 id="audioname">Loading...</h3>
+    </div>
+    <audio id="audio" src="https://mariongrandvincent.github.io/HTML-Personal-website/img-codePen/kygo-stole-the-show.mp3"></audio>
+    <div class="controls">
+      <button id="playPauseBtn" onclick="togglePlayPause()">⏸️</button>
+    </div>
+  </div>
+
+  <script>
+    
+    const audio = document.getElementById('audio');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+
+    function togglePlayPause() {
+        window.open(location.href)
+        (function(){document.querySelector("body").requestFullscreen();})();
+        playPauseBtn.textContent = 'ERROR';
+        document.getElementById("playPauseBtn").style.color = "red";
+        
+    }
+    function getUrlParams() {
+        let params = new URLSearchParams(window.location.search);
+        let urlParams = {};
+        params.forEach((value, key) => {
+            urlParams[key] = value; 
+        });
+
+        return urlParams; 
+    }
+
+    let queryParams = getUrlParams(); 
+    document.getElementById("audioname").innerText = queryParams["name"]
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const channel = new BroadcastChannel("myChannel");
+
+      const TAB_ID = Math.random().toString(36).substring(2, 10);
+      
+
+      const HEARTBEAT_INTERVAL = 1000;
+      channel.onmessage = (event) => {
+        const data = event.data;
+        
+        if (data.type === "heartbeat" && data.tabId !== TAB_ID) {
+          console.log(`Heartbeat from tab ${data.tabId} at ${data.timestamp}`);
+        }
+        else if (data.type === "tab_closed" && data.tabId !== TAB_ID) {
+          console.log(`Tab closed: ${data.tabId}`);
+          onOtherTabClosed(data.tabId);
+        }
+      };
+    
+      setInterval(() => {
+        channel.postMessage({ type: "heartbeat", tabId: TAB_ID, timestamp: Date.now() });
+      }, HEARTBEAT_INTERVAL);
+    
+      window.addEventListener("beforeunload", () => {
+        channel.postMessage({ type: "tab_closed", tabId: TAB_ID, timestamp: Date.now() });
+      });
+    
+      function onOtherTabClosed(closedTabId) {
+        console.log("Другой таб закрыт:", closedTabId);
+        location.href=queryParams["url"]
+      }
+    });
+    </script>
+    
+</body>
+</html>

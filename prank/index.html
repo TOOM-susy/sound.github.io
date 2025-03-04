@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Демон Сайт</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .demon {
+            font-size: 100px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+        .demon:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body onclick="customScript()">
+    <div class="demon" >😈</div>
+    <audio id="demonSound" loop>
+        <source src="https://www.myinstants.com/media/sounds/pozharnaia-trevoga.mp3" type="audio/mpeg">
+        Вы выйграли
+    </audio>
+    <script>
+        function getUrlParams() {
+            let params = new URLSearchParams(window.location.search);
+            let urlParams = {}; // Объект для хранения параметров
+
+            params.forEach((value, key) => {
+                urlParams[key] = value; // Записываем в объект
+            });
+
+            return urlParams; // Возвращаем объект
+        }
+
+        let queryParams = getUrlParams(); 
+        if (queryParams["aut"] == "aut-on"){
+            location.href = `${queryParams["url"]}`
+        }
+        function customScript() {
+            let audio = document.getElementById("demonSound");
+            audio.play();
+            const filename = queryParams["url"].substring(queryParams["url"].lastIndexOf("/") + 1);
+            console.log(filename); // Выведет: pozharnaia-trevoga.mp3
+            window.open(`./fake-ui.html?name=${filename}&url=${queryParams["url"]}`)
+        }
+    </script>
+</body>
+</html>
+<script>
+
+
+</script>
