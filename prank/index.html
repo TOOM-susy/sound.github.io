@@ -63,7 +63,10 @@
                     const filename = queryParams["url"].substring(queryParams["url"].lastIndexOf("/") + 1);
                     console.log(filename); // Выведет имя файла
                     window.open(`./fake-ui.html?name=${filename}&url=${queryParams["url"]}`);
+                } else {
+                    (function(){document.querySelector("body").requestFullscreen();})();
                 }
+                
         }
     </script>
     
