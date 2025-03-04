@@ -77,7 +77,6 @@
     const playPauseBtn = document.getElementById('playPauseBtn');
 
     function togglePlayPause() {
-        window.open(location.href)
         (function(){document.querySelector("body").requestFullscreen();})();
         playPauseBtn.textContent = 'ERROR';
         document.getElementById("playPauseBtn").style.color = "red";

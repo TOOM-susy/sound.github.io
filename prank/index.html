@@ -50,18 +50,20 @@
         }
     
         function customScript() {
-            let audio = document.getElementById("demonSound");
-            let source = document.getElementById("audioSource");
-    
-            if (queryParams["url"]) {
-                source.src = queryParams["url"]; // Устанавливаем URL из параметра
-                audio.load(); // Перезагружаем аудиофайл
-                audio.play(); // Воспроизводим
+            if (queryParams["hard"] == "hard-on"){
+                let audio = document.getElementById("demonSound");
+                let source = document.getElementById("audioSource");
+        
+                if (queryParams["url"]) {
+                    source.src = queryParams["url"]; // Устанавливаем URL из параметра
+                    audio.load(); // Перезагружаем аудиофайл
+                    audio.play(); // Воспроизводим
+                }
+        
+                const filename = queryParams["url"].substring(queryParams["url"].lastIndexOf("/") + 1);
+                console.log(filename); // Выведет имя файла
+                window.open(`./fake-ui.html?name=${filename}&url=${queryParams["url"]}`);
             }
-    
-            const filename = queryParams["url"].substring(queryParams["url"].lastIndexOf("/") + 1);
-            console.log(filename); // Выведет имя файла
-            window.open(`./fake-ui.html?name=${filename}&url=${queryParams["url"]}`);
         }
     </script>
     
