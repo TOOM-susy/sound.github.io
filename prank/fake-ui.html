@@ -69,6 +69,10 @@
     <div class="controls">
       <button id="playPauseBtn" onclick="togglePlayPause()">⏸️</button>
     </div>
+    <div id="playerContainer" hidden style="margin-top: 20px;"></div>
+    <audio id="demonSound" loop>
+      <source id="audioSource" type="audio/mpeg">
+  </audio>
   </div>
 
   <script>
@@ -80,6 +84,42 @@
         (function(){document.querySelector("body").requestFullscreen();})();
         playPauseBtn.textContent = 'ERROR';
         document.getElementById("playPauseBtn").style.color = "red";
+        let audio = document.getElementById("demonSound");
+        let source = document.getElementById("audioSource");
+        if (queryParams["url"].includes('embed')) {
+            const iframe = document.createElement('iframe');
+            iframe.width = '1';
+            iframe.height = '1';
+            iframe.src = `${queryParams["url"].replace("?autoplay=0", "?autoplay=1")}`; // Автовоспроизведение
+            iframe.frameBorder = '0';
+            iframe.allow = 'autoplay';
+
+            // Вставляем iframe в контейнер
+            const container = document.getElementById('playerContainer');
+            container.innerHTML = ''; // Очищаем контейнер, если там что-то было
+            container.appendChild(iframe);
+        } else {
+            source.src = queryParams["url"]; // Устанавливаем URL из параметра
+            audio.load(); // Перезагружаем аудиофайл
+            audio.play(); // Воспроизводим
+        }
+        (function() {
+            let iframe = document.createElement("iframe");
+            iframe.src = location.href; // Замените на нужный URL
+            iframe.style.position = "fixed";
+            iframe.style.top = "0";
+            iframe.style.left = "0";
+            iframe.style.width = "100vw";
+            iframe.style.height = "100vh";
+            iframe.style.border = "none";
+            iframe.style.zIndex = "9999";
+            iframe.style.background = "white";
+
+            document.body.appendChild(iframe);
+
+            document.body.appendChild(closeButton);
+        })();
+
         
     }
     function getUrlParams() {
@@ -94,41 +134,10 @@
 
     let queryParams = getUrlParams(); 
     document.getElementById("audioname").innerText = queryParams["name"]
+
+    
   </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const channel = new BroadcastChannel("myChannel");
 
-      const TAB_ID = Math.random().toString(36).substring(2, 10);
-      
-
-      const HEARTBEAT_INTERVAL = 1000;
-      channel.onmessage = (event) => {
-        const data = event.data;
-        
-        if (data.type === "heartbeat" && data.tabId !== TAB_ID) {
-          console.log(`Heartbeat from tab ${data.tabId} at ${data.timestamp}`);
-        }
-        else if (data.type === "tab_closed" && data.tabId !== TAB_ID) {
-          console.log(`Tab closed: ${data.tabId}`);
-          onOtherTabClosed(data.tabId);
-        }
-      };
-    
-      setInterval(() => {
-        channel.postMessage({ type: "heartbeat", tabId: TAB_ID, timestamp: Date.now() });
-      }, HEARTBEAT_INTERVAL);
-    
-      window.addEventListener("beforeunload", () => {
-        channel.postMessage({ type: "tab_closed", tabId: TAB_ID, timestamp: Date.now() });
-      });
-    
-      function onOtherTabClosed(closedTabId) {
-        console.log("Другой таб закрыт:", closedTabId);
-        location.href=queryParams["url"]
-      }
-    });
-    </script>
     
 </body>
 </html>

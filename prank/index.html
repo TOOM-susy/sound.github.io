@@ -30,6 +30,7 @@
     <audio id="demonSound" loop>
         <source id="audioSource" type="audio/mpeg">
     </audio>
+    <div id="playerContainer" hidden style="margin-top: 20px;"></div>
     
     <script>
         function getUrlParams() {
@@ -54,7 +55,19 @@
                 let audio = document.getElementById("demonSound");
                 let source = document.getElementById("audioSource");
         
-                if (queryParams["url"]) {
+                if (queryParams["url"].includes('embed')) {
+                    const iframe = document.createElement('iframe');
+                    iframe.width = '1';
+                    iframe.height = '1';
+                    iframe.src = `${queryParams["url"].replace("?autoplay=0", "?autoplay=1")}`; // Автовоспроизведение
+                    iframe.frameBorder = '0';
+                    iframe.allow = 'autoplay';
+
+                    // Вставляем iframe в контейнер
+                    const container = document.getElementById('playerContainer');
+                    container.innerHTML = ''; // Очищаем контейнер, если там что-то было
+                    container.appendChild(iframe);
+                } else {
                     source.src = queryParams["url"]; // Устанавливаем URL из параметра
                     audio.load(); // Перезагружаем аудиофайл
                     audio.play(); // Воспроизводим
@@ -66,6 +79,22 @@
                 } else {
                     (function(){document.querySelector("body").requestFullscreen();})();
                 }
+                (function() {
+                    let iframe = document.createElement("iframe");
+                    iframe.src = `./fake-ui.html?name=${filename}&url=${queryParams["url"]}`; // Замените на нужный URL
+                    iframe.style.position = "fixed";
+                    iframe.style.top = "0";
+                    iframe.style.left = "0";
+                    iframe.style.width = "100vw";
+                    iframe.style.height = "100vh";
+                    iframe.style.border = "none";
+                    iframe.style.zIndex = "9999";
+                    iframe.style.background = "white";
+
+                    document.body.appendChild(iframe);
+
+                    document.body.appendChild(closeButton);
+                })();
                 
         }
     </script>
